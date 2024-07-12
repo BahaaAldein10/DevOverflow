@@ -2,6 +2,7 @@
 'use server';
 
 import User from '@/database/user.model';
+import { revalidatePath } from 'next/cache';
 import { connectToDatabase } from '../mongoose';
 import { GetAllUsersParams, GetUserByIdParams } from './shared.types';
 
@@ -73,5 +74,38 @@ export async function getAllUsers(params: GetAllUsersParams) {
   } catch (error) {
     console.log(error);
     throw error;
+  }
+}
+
+interface SaveQuestionParams {
+  questionId: string;
+  userId: string;
+  hasSaved: boolean;
+  path: string;
+}
+
+export async function saveQuestion(params: SaveQuestionParams) {
+  try {
+    await connectToDatabase();
+
+    const { questionId, userId, hasSaved, path } = params;
+
+    let updateQuery = {};
+
+    if (hasSaved) {
+      updateQuery = { $pull: { saved: questionId } };
+    } else {
+      updateQuery = { $addToSet: { saved: questionId } };
+    }
+
+    const user = await User.findByIdAndUpdate(userId, updateQuery, {
+      new: true,
+    });
+
+    if (!user) throw new Error('User not found!');
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
   }
 }

@@ -13,12 +13,21 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useTheme } from '@/context/ThemeProvider';
+import { createAnswer } from '@/lib/actions/answer.actions';
 import { AnswerSchema } from '@/lib/validations';
 import { Editor } from '@tinymce/tinymce-react';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useRef, useState } from 'react';
 
-function Answer() {
+interface props {
+  question: string;
+  questionId: string;
+  authorId: string;
+}
+
+function Answer({ question, questionId, authorId }: props) {
+  const pathname = usePathname();
   const { mode } = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const editorRef = useRef(null);
@@ -30,8 +39,30 @@ function Answer() {
     },
   });
 
-  function handleCreateAnswer(values: z.infer<typeof AnswerSchema>) {
+  async function handleCreateAnswer(values: z.infer<typeof AnswerSchema>) {
     setIsSubmitting(true);
+
+    try {
+      await createAnswer({
+        content: values.answer,
+        author: JSON.parse(authorId),
+        question: JSON.parse(questionId),
+        path: pathname,
+      });
+
+      form.reset();
+
+      if (editorRef.current) {
+        const editor = editorRef.current as any;
+
+        editor.setContent('');
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+
     console.log(values);
   }
 
