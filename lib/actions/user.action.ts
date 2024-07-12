@@ -1,10 +1,17 @@
 /* eslint-disable camelcase */
 'use server';
 
+import Question from '@/database/question.model';
+import Tag from '@/database/tag.model';
 import User from '@/database/user.model';
+import { FilterQuery } from 'mongoose';
 import { revalidatePath } from 'next/cache';
 import { connectToDatabase } from '../mongoose';
-import { GetAllUsersParams, GetUserByIdParams } from './shared.types';
+import {
+  GetAllUsersParams,
+  GetSavedQuestionsParams,
+  GetUserByIdParams,
+} from './shared.types';
 
 type UserParams = {
   id: string;
@@ -105,6 +112,42 @@ export async function saveQuestion(params: SaveQuestionParams) {
     if (!user) throw new Error('User not found!');
 
     revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getSavedQuestions(params: GetSavedQuestionsParams) {
+  try {
+    await connectToDatabase();
+
+    const { clerkId, searchQuery } = params;
+
+    const query: FilterQuery<typeof Question> = searchQuery
+      ? { title: { $regex: new RegExp(searchQuery, 'i') } }
+      : {};
+
+    const user = await User.findOne({ clerkId }).populate({
+      path: 'saved',
+      match: query,
+      options: {
+        sort: { createdAt: -1 },
+      },
+      populate: [
+        { path: 'tags', model: Tag, select: '_id name' },
+        {
+          path: 'author',
+          model: User,
+          select: '_id clerkId picture name',
+        },
+      ],
+    });
+
+    if (!user) throw new Error('User not found!');
+
+    const savedQuestions = user.saved;
+
+    return { questions: savedQuestions };
   } catch (error) {
     console.log(error);
   }

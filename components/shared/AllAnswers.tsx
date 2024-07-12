@@ -66,6 +66,7 @@ async function AllAnswers({
                   hasupVoted={answer.upvotes.includes(userId)}
                   downvotes={answer.downvotes.length}
                   hasdownVoted={answer.downvotes.includes(userId)}
+                  hasSaved
                 />
               </div>
             </div>
