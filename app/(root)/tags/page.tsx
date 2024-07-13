@@ -1,10 +1,13 @@
 import Filter from '@/components/shared/Filter';
 import LocalSearchbar from '@/components/shared/LocalSearchbar';
+import NoResult from '@/components/shared/NoResult';
 import { TagFilters } from '@/constants/filters';
+import { getAllTags } from '@/lib/actions/tag.actions';
 import { SearchParamsProps } from '@/types';
+import Link from 'next/link';
 
 const Page = async ({ searchParams }: SearchParamsProps) => {
-  // const result = await getAllTags({});
+  const result = await getAllTags({});
 
   return (
     <>
@@ -25,9 +28,9 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
         />
       </div>
 
-      {/* <section className="mt-12 flex flex-wrap gap-4">
-        {result.tags.length > 0 ? (
-          result.tags.map((tag) => (
+      <section className="mt-12 flex flex-wrap gap-4">
+        {(result?.tags?.length ?? 0) > 0 ? (
+          result?.tags.map((tag) => (
             <Link
               href={`/tags/${tag._id}`}
               key={tag._id}
@@ -57,7 +60,7 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
             linkTitle="Ask a question"
           />
         )}
-      </section> */}
+      </section>
     </>
   );
 };

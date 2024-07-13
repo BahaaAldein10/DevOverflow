@@ -54,12 +54,13 @@ export async function POST(req: Request) {
   const eventType = evt.type;
 
   if (eventType === 'user.created' || eventType === 'user.updated') {
-    const { id, email_addresses, username, image_url } = evt.data;
+    const { id, email_addresses, first_name, username, image_url } = evt.data;
 
     try {
       await createOrUpdateUser({
         id,
         email_addresses,
+        first_name: first_name!,
         username,
         image_url,
       });

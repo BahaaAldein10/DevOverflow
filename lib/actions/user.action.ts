@@ -16,6 +16,7 @@ import {
 type UserParams = {
   id: string;
   email_addresses: { email_address: string }[];
+  first_name: string;
   username: string | null;
   image_url: string;
 };
@@ -23,6 +24,7 @@ type UserParams = {
 export async function createOrUpdateUser({
   id,
   email_addresses,
+  first_name,
   username,
   image_url,
 }: UserParams) {
@@ -34,6 +36,7 @@ export async function createOrUpdateUser({
       {
         $set: {
           email: email_addresses[0].email_address,
+          name: first_name,
           username,
           picture: image_url,
         },
