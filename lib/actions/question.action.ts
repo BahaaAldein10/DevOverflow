@@ -1,5 +1,7 @@
 'use server';
 
+import Answer from '@/database/answer.model';
+import Interaction from '@/database/interaction.model';
 import Question from '@/database/question.model';
 import Tag from '@/database/tag.model';
 import User from '@/database/user.model';
@@ -7,6 +9,8 @@ import { revalidatePath } from 'next/cache';
 import { connectToDatabase } from '../mongoose';
 import {
   CreateQuestionParams,
+  DeleteQuestionParams,
+  EditQuestionParams,
   GetQuestionByIdParams,
   GetQuestionsParams,
   QuestionVoteParams,
@@ -72,11 +76,33 @@ export async function createQuestion(params: CreateQuestionParams) {
   }
 }
 
+export async function editQuestion(params: EditQuestionParams) {
+  try {
+    await connectToDatabase();
+
+    const { questionId, title, content, path } = params;
+
+    const question = await Question.findById(questionId).populate('tags');
+
+    if (!question) throw new Error('Question not found!');
+
+    question.title = title;
+    question.content = content;
+
+    await question.save();
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 export async function getQuestionById(params: GetQuestionByIdParams) {
   try {
     await connectToDatabase();
 
     const { questionId } = params;
+
     const question = await Question.findById(questionId)
       .populate({
         path: 'tags',
@@ -150,6 +176,30 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
     });
 
     if (!question) throw new Error('Question not found!');
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function deleteQuestion(params: DeleteQuestionParams) {
+  try {
+    await connectToDatabase();
+
+    const { questionId, path } = params;
+
+    await Question.deleteOne({ _id: questionId });
+
+    await Answer.deleteMany({ question: questionId });
+
+    await Interaction.deleteMany({ question: questionId });
+
+    await Tag.updateMany(
+      { questions: questionId },
+      { $pull: { questions: questionId } }
+    );
 
     revalidatePath(path);
   } catch (error) {
