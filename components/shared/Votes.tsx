@@ -96,7 +96,6 @@ function Votes({
       questionId: JSON.parse(itemId),
       userId: userId ? JSON.parse(userId) : undefined,
     });
-
   }, [itemId, userId, pathname, router]);
 
   return (

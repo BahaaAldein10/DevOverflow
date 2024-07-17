@@ -13,6 +13,7 @@ import {
   GetSavedQuestionsParams,
   GetUserByIdParams,
   GetUserStatsParams,
+  UpdateUserParams,
 } from './shared.types';
 
 type UserParams = {
@@ -64,6 +65,22 @@ export async function deleteUser(id: string | undefined) {
   }
 }
 
+export async function updateUser(params: UpdateUserParams) {
+  try {
+    await connectToDatabase();
+
+    const { clerkId, updateData, path } = params;
+
+    await User.findOneAndUpdate({ clerkId }, updateData, {
+      new: true,
+    });
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 export async function getUserById(params: GetUserByIdParams) {
   try {
     await connectToDatabase();

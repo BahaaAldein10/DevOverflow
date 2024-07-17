@@ -5,12 +5,12 @@
  * @author Ayush Saini <@AyushCodes on Twitter>
 */
 
-code[class*="language-"],
-pre[class*="language-"] {
+code[class*='language-'],
+pre[class*='language-'] {
   color: #d6e7ff;
   background: #030314;
   text-shadow: none;
-  font-family: "Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono",
+  font-family: 'Fira Code', 'Fira Mono', Menlo, Consolas, 'DejaVu Sans Mono',
     monospace;
   font-size: 1em;
   line-height: 1.5;
@@ -31,20 +31,20 @@ pre[class*="language-"] {
   hyphens: none;
 }
 
-pre[class*="language-"]::-moz-selection,
-pre[class*="language-"] ::-moz-selection,
-code[class*="language-"]::-moz-selection,
-code[class*="language-"] ::-moz-selection,
-pre[class*="language-"]::selection,
-pre[class*="language-"] ::selection,
-code[class*="language-"]::selection,
-code[class*="language-"] ::selection {
+pre[class*='language-']::-moz-selection,
+pre[class*='language-'] ::-moz-selection,
+code[class*='language-']::-moz-selection,
+code[class*='language-'] ::-moz-selection,
+pre[class*='language-']::selection,
+pre[class*='language-'] ::selection,
+code[class*='language-']::selection,
+code[class*='language-'] ::selection {
   color: inherit;
   background: #1d3b54;
   text-shadow: none;
 }
 
-pre[class*="language-"] {
+pre[class*='language-'] {
   border: 1px solid #2a4555;
   border-radius: 5px;
   padding: 1.5em 1em;
@@ -52,7 +52,7 @@ pre[class*="language-"] {
   overflow: auto;
 }
 
-:not(pre) > code[class*="language-"] {
+:not(pre) > code[class*='language-'] {
   color: #f0f6f6;
   background: #2a4555;
   padding: 0.2em 0.3em;

@@ -57,6 +57,7 @@ const Question = ({ mongoUserId, type, questionDetails }: Props) => {
           content: values.explanation,
           path: pathname,
         });
+
         router.push(`/question/${parsedQuestionDetails._id}`);
       } else {
         await createQuestion({

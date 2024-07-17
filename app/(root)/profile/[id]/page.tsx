@@ -9,8 +9,8 @@ import { getJoinedDate } from '@/lib/utils';
 import { URLProps } from '@/types';
 import { SignedIn } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
-import { Link } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 async function Profile({ params, searchParams }: URLProps) {
   const userInfo = await getUserInfo({ userId: params.id });
@@ -69,7 +69,7 @@ async function Profile({ params, searchParams }: URLProps) {
         <div className="flex justify-end max-sm:mb-5 max-sm:w-full sm:mt-3">
           <SignedIn>
             {clerkId === userInfo.user.clerkId && (
-              <Link href="/profile/edit">
+              <Link href={`/profile/edit/${userInfo.user.clerkId}`}>
                 <Button className="paragraph-medium btn-secondary text-dark300_light900 min-h-[46px] min-w-[175px] px-4 py-3">
                   Edit Profile
                 </Button>

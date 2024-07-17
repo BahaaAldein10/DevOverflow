@@ -15,7 +15,7 @@ async function Page({ params }: ParamsProps) {
 
   return (
     <>
-      <h1 className="h1-bold text-dark100_light900">Edit question</h1>
+      <h1 className="h1-bold text-dark100_light900">Edit Question</h1>
 
       <div className="mt-9">
         <Question
