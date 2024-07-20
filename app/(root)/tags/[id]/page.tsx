@@ -3,9 +3,15 @@ import LocalSearchbar from '@/components/shared/LocalSearchbar';
 import NoResult from '@/components/shared/NoResult';
 import { getQuestionsByTagId } from '@/lib/actions/tag.actions';
 
-async function Page({ params }: { params: { id: string } }) {
-  const result = await getQuestionsByTagId({ tagId: params.id });
-  console.log(result);
+interface Props {
+  params: { id: string };
+  searchParams: { [key: string]: string | undefined };
+}
+async function Page({ params, searchParams }: Props) {
+  const result = await getQuestionsByTagId({
+    tagId: params.id,
+    searchQuery: searchParams.q,
+  });
 
   return (
     <>
