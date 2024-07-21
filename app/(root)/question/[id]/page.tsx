@@ -11,7 +11,7 @@ import { auth } from '@clerk/nextjs/server';
 import Image from 'next/image';
 import Link from 'next/link';
 
-async function Page({ params }: { params: { id: string } }) {
+async function Page({ params, searchParams }: any) {
   const result = await getQuestionById({ questionId: params.id });
 
   const { userId: clerkId } = auth();
@@ -100,6 +100,8 @@ async function Page({ params }: { params: { id: string } }) {
         questionId={result._id}
         userId={mongoUser._id}
         totalAnswers={result.answers.length}
+        page={searchParams?.page}
+        filter={searchParams?.filter}
       />
 
       <Answer
