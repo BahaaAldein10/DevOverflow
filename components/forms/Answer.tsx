@@ -30,6 +30,7 @@ function Answer({ question, questionId, authorId }: props) {
   const pathname = usePathname();
   const { mode } = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [aiSubmitting, setAiSubmitting] = useState(false);
   const editorRef = useRef(null);
 
   const form = useForm<z.infer<typeof AnswerSchema>>({
@@ -66,6 +67,28 @@ function Answer({ question, questionId, authorId }: props) {
     console.log(values);
   }
 
+  const generateAiAnswer = async () => {
+    setAiSubmitting(true);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/chatgpt`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ question }),
+        }
+      );
+
+      const aiAnswer = await response.json();
+
+      alert(aiAnswer.reply);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setAiSubmitting(false);
+    }
+  };
+
   return (
     <div>
       <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
@@ -73,7 +96,11 @@ function Answer({ question, questionId, authorId }: props) {
           Write your answer here
         </h4>
 
-        <Button className="btn light-border-2 gap-1.5 rounded-md px-4 py-2.5 text-primary-500 shadow-none dark:text-primary-500">
+        <Button
+          disabled={aiSubmitting}
+          onClick={generateAiAnswer}
+          className="btn light-border-2 gap-1.5 rounded-md px-4 py-2.5 text-primary-500 shadow-none dark:text-primary-500"
+        >
           <Image
             src="/assets/icons/stars.svg"
             alt="star"
