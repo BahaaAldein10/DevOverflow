@@ -31,7 +31,11 @@ function ParseHTML({ data }: { data: string }) {
     prism.highlightAll();
   }, []);
 
-  return <div>{parse(data)}</div>;
+  return (
+    <div className="text-dark400_light800 markdown w-full min-w-full">
+      {parse(data)}
+    </div>
+  );
 }
 
 export default ParseHTML;

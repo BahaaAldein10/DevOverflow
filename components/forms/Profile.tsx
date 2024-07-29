@@ -17,6 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { usePathname, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { toast } from '../ui/use-toast';
 
 interface Props {
   mongoUser: string;
@@ -164,6 +165,11 @@ function Profile({ mongoUser }: Props) {
             type="submit"
             className="primary-gradient w-fit"
             disabled={form.formState.isSubmitting}
+            onClick={() => {
+              toast({
+                title: 'Profile Updated Successfully!',
+              });
+            }}
           >
             {form.formState.isSubmitting ? 'Saving...' : 'Save'}
           </Button>

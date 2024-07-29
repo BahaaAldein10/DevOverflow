@@ -11,6 +11,7 @@ import { formatAndDivideNumber } from '@/lib/utils';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { toast } from '../ui/use-toast';
 
 interface Props {
   type: string;
@@ -37,7 +38,10 @@ function Votes({
   const router = useRouter();
 
   const handleVote = async (action: string) => {
-    if (!userId) return;
+    if (!userId)
+      return toast({
+        title: 'Please log in!',
+      });
 
     if (action === 'upvote') {
       if (type === 'Question') {
@@ -48,6 +52,11 @@ function Votes({
           hasdownVoted,
           path: pathname,
         });
+
+        return toast({
+          title: `Upvote ${hasupVoted ? 'Removed' : 'Successful'}`,
+          variant: hasupVoted ? 'destructive' : 'default',
+        });
       } else if (type === 'Answer') {
         await upvoteAnswer({
           answerId: JSON.parse(itemId),
@@ -55,6 +64,11 @@ function Votes({
           hasdownVoted,
           hasupVoted,
           path: pathname,
+        });
+
+        return toast({
+          title: `Upvote ${hasupVoted ? 'Removed' : 'Successful'}`,
+          variant: hasupVoted ? 'destructive' : 'default',
         });
       }
 
@@ -70,6 +84,11 @@ function Votes({
           hasdownVoted,
           path: pathname,
         });
+
+        return toast({
+          title: `Downvote ${hasdownVoted ? 'Removed' : 'Successful'}`,
+          variant: hasdownVoted ? 'destructive' : 'default',
+        });
       } else if (type === 'Answer') {
         await downvoteAnswer({
           answerId: JSON.parse(itemId),
@@ -77,6 +96,11 @@ function Votes({
           hasdownVoted,
           hasupVoted,
           path: pathname,
+        });
+
+        return toast({
+          title: `Downvote ${hasdownVoted ? 'Removed' : 'Successful'}`,
+          variant: hasdownVoted ? 'destructive' : 'default',
         });
       }
     }
@@ -88,6 +112,11 @@ function Votes({
       userId: JSON.parse(userId),
       hasSaved,
       path: pathname,
+    });
+
+    return toast({
+      title: `Question ${hasSaved ? 'Removed' : 'Saved'} Successfully!`,
+      variant: `${hasSaved ? 'destructive' : 'default'}`,
     });
   };
 

@@ -4,6 +4,7 @@ import { deleteAnswer } from '@/lib/actions/answer.actions';
 import { deleteQuestion } from '@/lib/actions/question.action';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import { useToast } from '../ui/use-toast';
 
 interface props {
   type: string;
@@ -13,6 +14,7 @@ interface props {
 const EditDeleteAction = ({ type, itemId }: props) => {
   const pathname = usePathname();
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleEdit = () => {
     router.push(`/question/edit/${JSON.parse(itemId)}`);
@@ -21,8 +23,14 @@ const EditDeleteAction = ({ type, itemId }: props) => {
   const handleDelete = async () => {
     if (type === 'Question') {
       await deleteQuestion({ questionId: JSON.parse(itemId), path: pathname });
+      toast({
+        title: 'Question deleted successfully!',
+      });
     } else if (type === 'Answer') {
       await deleteAnswer({ answerId: JSON.parse(itemId), path: pathname });
+      toast({
+        title: 'Answer deleted successfully!',
+      });
     }
   };
 

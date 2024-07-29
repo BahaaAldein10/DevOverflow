@@ -84,7 +84,7 @@ function Answer({ question, questionId, authorId }: props) {
       const formattedAnswer = aiAnswer.reply.replace('/\n/g', '<br />');
 
       alert(aiAnswer.reply);
-      
+
       if (editorRef.current) {
         const editor = editorRef.current as any;
         editor.setContent(formattedAnswer);

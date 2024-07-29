@@ -29,7 +29,7 @@ const GlobalSearch = () => {
       }
     };
 
-    setIsOpen(false)
+    setIsOpen(false);
 
     document.addEventListener('click', handleOutsideClick);
 

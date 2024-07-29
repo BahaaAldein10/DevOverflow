@@ -21,6 +21,7 @@ import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Badge } from '../ui/badge';
+import { useToast } from '../ui/use-toast';
 
 interface Props {
   mongoUserId: string;
@@ -33,6 +34,7 @@ const Question = ({ mongoUserId, type, questionDetails }: Props) => {
   const editorRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
+  const { toast } = useToast();
 
   const parsedQuestionDetails =
     questionDetails && JSON.parse(questionDetails || '');
@@ -251,8 +253,13 @@ const Question = ({ mongoUserId, type, questionDetails }: Props) => {
         />
         <Button
           type="submit"
-          className="primary-gradient w-fit !text-light-900"
           disabled={isSubmitting}
+          onClick={() => {
+            toast({
+              title: 'Answer Submitted Successfully!',
+            });
+          }}
+          className="primary-gradient w-fit !text-light-900"
         >
           {isSubmitting ? (
             <>{type === 'Edit' ? 'Editing...' : 'Posting...'}</>

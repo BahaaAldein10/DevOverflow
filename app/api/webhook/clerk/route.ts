@@ -2,6 +2,7 @@
 import { createOrUpdateUser, deleteUser } from '@/lib/actions/user.action';
 import { WebhookEvent } from '@clerk/nextjs/server';
 import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
 import { Webhook } from 'svix';
 
 export async function POST(req: Request) {
@@ -78,10 +79,10 @@ export async function POST(req: Request) {
     try {
       await deleteUser(id);
 
-      return new Response('User is deleted!', { status: 200 });
+      return NextResponse.json('User is deleted!', { status: 200 });
     } catch (error) {
       console.log(error);
-      return new Response('Error occurred!', { status: 500 });
+      return NextResponse.json('Error occurred!', { status: 500 });
     }
   }
 }
