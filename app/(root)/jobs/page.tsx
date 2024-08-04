@@ -30,6 +30,7 @@ interface Country {
 function Jobs() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [countryCode, setCountryCode] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState('');
   const [countries, setCountries] = useState<Country[]>([]);
   const [totalPages, setTotalPages] = useState<number>(0);
 
@@ -37,25 +38,26 @@ function Jobs() {
   const router = useRouter();
 
   const pageNumber = Number(searchParams.get('page')) || 1;
-  const limit = 5;
+  const pageSize = 5;
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        // Fetch jobs with pagination parameters
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/api/search`
         );
 
         const responseData = await response.json();
-        const result = responseData.result;
+
+        const startIndex = (pageNumber - 1) * pageSize;
+        const lastIndex = startIndex + pageSize;
+
+        const result = responseData.result.slice(startIndex, lastIndex);
+
         const totalItems = responseData.totalItems;
 
-        console.log(result);
-        console.log(totalItems);
-
         // Calculate the total number of pages
-        setTotalPages(Math.ceil(totalItems / limit));
+        setTotalPages(Math.ceil(totalItems / pageSize));
 
         setJobs(result);
       } catch (error) {
@@ -70,7 +72,7 @@ function Jobs() {
     const fetchIP = async () => {
       try {
         const response = await fetch(
-          'http://ip-api.com/json/?fields=status,message,countryCode'
+          'http://ip-api.com/json/?fields=status,message,countryCode,country'
         );
 
         const result = await response.json();
@@ -84,7 +86,7 @@ function Jobs() {
   }, []);
 
   useEffect(() => {
-    if (!searchParams.has('filter')) {
+    if (!searchParams.has('filter') || searchParams.get('filter') === '') {
       const newUrl = formUrlQuery({
         params: searchParams.toString(),
         key: 'filter',
@@ -92,8 +94,14 @@ function Jobs() {
       });
 
       router.push(newUrl);
+    } else {
+      const countryValue = searchParams.get('filter')?.toLowerCase() || '';
+      const country = countries.find(
+        (country) => country.value === countryValue
+      );
+      setSelectedCountry(country ? country.name : '');
     }
-  }, [router, searchParams, countryCode]);
+  }, [router, searchParams, countryCode, countries]);
 
   const searchQuery = searchParams.get('q')?.toLowerCase() || '';
   const filterQuery = searchParams.get('filter')?.toLowerCase();
@@ -170,13 +178,20 @@ function Jobs() {
         {filteredJobs.length > 0 ? (
           filteredJobs.map((job, index) => <JobCard key={index} job={job} />)
         ) : (
-          <p>No job listings available.</p>
+          <p className="text-dark200_light900">
+            No job listings available for {selectedCountry}.
+          </p>
         )}
       </div>
 
-      <div className="mt-10">
-        <Pagination pageNumber={pageNumber} isNext={pageNumber < totalPages} />
-      </div>
+      {filteredJobs.length > 0 && (
+        <div className="mt-10">
+          <Pagination
+            pageNumber={pageNumber}
+            isNext={pageNumber < totalPages}
+          />
+        </div>
+      )}
     </>
   );
 }

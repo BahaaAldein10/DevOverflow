@@ -71,6 +71,9 @@ const Question = ({ mongoUserId, type, questionDetails }: Props) => {
           path: pathname,
         });
 
+        toast({
+          title: 'Answer Submitted Successfully!',
+        });
         router.push('/');
       }
     } catch (error) {
@@ -254,11 +257,6 @@ const Question = ({ mongoUserId, type, questionDetails }: Props) => {
         <Button
           type="submit"
           disabled={isSubmitting}
-          onClick={() => {
-            toast({
-              title: 'Answer Submitted Successfully!',
-            });
-          }}
           className="primary-gradient w-fit !text-light-900"
         >
           {isSubmitting ? (
