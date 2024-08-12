@@ -31,7 +31,7 @@ export async function getAllTags(params: GetAllTagsParams) {
   try {
     await connectToDatabase();
 
-    const { searchQuery, filter, page = 1, pageSize = 4 } = params;
+    const { searchQuery, filter, page = 1, pageSize = 10 } = params;
 
     const query: FilterQuery<typeof Tag> = searchQuery
       ? { name: { $regex: new RegExp(searchQuery, 'i') } }

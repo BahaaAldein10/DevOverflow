@@ -8,10 +8,12 @@ import { SearchParamsProps } from '@/types';
 import Link from 'next/link';
 
 const Page = async ({ searchParams }: SearchParamsProps) => {
+  const page = searchParams.page ? +searchParams.page : 1;
+
   const result = await getAllTags({
     searchQuery: searchParams.q,
     filter: searchParams.filter,
-    page: searchParams.page ? +searchParams.page : 1,
+    page,
   });
 
   return (
@@ -67,12 +69,16 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
         )}
       </section>
 
-      <div className="mt-10">
-        <Pagination
-          pageNumber={searchParams.page ? +searchParams.page : 1}
-          isNext={result?.isNext}
-        />
-      </div>
+      {!result?.isNext && page === 1 ? (
+        <></>
+      ) : (
+        <div className="mt-10">
+          <Pagination
+            pageNumber={searchParams.page ? +searchParams.page : 1}
+            isNext={result?.isNext}
+          />
+        </div>
+      )}
     </>
   );
 };

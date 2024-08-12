@@ -100,7 +100,7 @@ export async function getAllUsers(params: GetAllUsersParams) {
   try {
     await connectToDatabase();
 
-    const { searchQuery, filter, page = 1, pageSize = 1 } = params;
+    const { searchQuery, filter, page = 1, pageSize = 10 } = params;
 
     const query: FilterQuery<typeof User> = {};
 
@@ -141,7 +141,7 @@ export async function getAllUsers(params: GetAllUsersParams) {
     const totalUsers = await User.countDocuments(query);
     const isNext = totalUsers > skipAmount + users.length;
 
-    return { users, isNext };
+    return { users, isNext, totalUsers };
   } catch (error) {
     console.log(error);
     throw error;
@@ -185,7 +185,7 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
   try {
     await connectToDatabase();
 
-    const { clerkId, searchQuery, filter, page = 1, pageSize = 1 } = params;
+    const { clerkId, searchQuery, filter, page = 1, pageSize = 5 } = params;
 
     const query: FilterQuery<typeof Question> = searchQuery
       ? { title: { $regex: new RegExp(searchQuery, 'i') } }

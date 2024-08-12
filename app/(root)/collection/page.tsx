@@ -10,6 +10,7 @@ import { auth } from '@clerk/nextjs/server';
 
 export default async function Home({ searchParams }: SearchParamsProps) {
   const { userId } = auth();
+  const page = searchParams.page ? +searchParams.page : 1;
 
   if (!userId) return null;
 
@@ -64,12 +65,16 @@ export default async function Home({ searchParams }: SearchParamsProps) {
         )}
       </div>
 
-      <div className="mt-10">
-        <Pagination
-          pageNumber={searchParams?.page ? +searchParams.page : 1}
-          isNext={result?.isNext}
-        />
-      </div>
+      {!result?.isNext && page === 1 ? (
+        <></>
+      ) : (
+        <div className="mt-10">
+          <Pagination
+            pageNumber={searchParams?.page ? +searchParams.page : 1}
+            isNext={result?.isNext}
+          />
+        </div>
+      )}
     </>
   );
 }

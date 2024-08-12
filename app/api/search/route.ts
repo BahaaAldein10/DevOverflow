@@ -17,7 +17,7 @@ export async function GET() {
 
     const result = responseData.data;
     const totalItems = result.length;
-    
+
     return NextResponse.json({ result, totalItems });
   } catch (error) {
     console.log(error);

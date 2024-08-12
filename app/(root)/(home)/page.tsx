@@ -25,13 +25,14 @@ async function Home({ searchParams }: SearchParamsProps) {
   const { userId } = auth();
 
   let result;
+  const page = searchParams.page ? +searchParams.page : 1;
 
   if (searchParams?.filter === 'recommended') {
     if (userId) {
       result = await getRecommendedQuestions({
         userId,
         searchQuery: searchParams.q,
-        page: searchParams.page ? +searchParams.page : 1,
+        page,
       });
     } else {
       result = {
@@ -43,7 +44,7 @@ async function Home({ searchParams }: SearchParamsProps) {
     result = await getQuestions({
       searchQuery: searchParams.q,
       filter: searchParams.filter,
-      page: searchParams.page ? +searchParams.page : 1,
+      page,
     });
   }
 
@@ -102,12 +103,16 @@ async function Home({ searchParams }: SearchParamsProps) {
         )}
       </div>
 
-      <div className="mt-10">
-        <Pagination
-          pageNumber={searchParams?.page ? +searchParams.page : 1}
-          isNext={result.isNext}
-        />
-      </div>
+      {!result?.isNext && page === 1 ? (
+        <></>
+      ) : (
+        <div className="mt-10">
+          <Pagination
+            pageNumber={searchParams?.page ? +searchParams.page : 1}
+            isNext={result?.isNext}
+          />
+        </div>
+      )}
     </>
   );
 }

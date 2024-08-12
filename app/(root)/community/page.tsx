@@ -5,7 +5,12 @@ import Pagination from '@/components/shared/Pagination';
 import { UserFilters } from '@/constants/filters';
 import { getAllUsers } from '@/lib/actions/user.action';
 import { SearchParamsProps } from '@/types';
+import { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Community | Dev Overflow',
+};
 
 async function Community({ searchParams }: SearchParamsProps) {
   const result = await getAllUsers({
@@ -46,12 +51,14 @@ async function Community({ searchParams }: SearchParamsProps) {
         )}
       </section>
 
-      <div className="mt-10">
-        <Pagination
-          pageNumber={searchParams?.page ? +searchParams.page : 1}
-          isNext={result.isNext}
-        />
-      </div>
+      {result.totalUsers > result.users.length && (
+        <div className="mt-10">
+          <Pagination
+            pageNumber={searchParams?.page ? +searchParams.page : 1}
+            isNext={result.isNext}
+          />
+        </div>
+      )}
     </>
   );
 }
