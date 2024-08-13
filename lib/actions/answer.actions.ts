@@ -48,7 +48,7 @@ export async function getAnswers(params: GetAnswersParams) {
   try {
     await connectToDatabase();
 
-    const { questionId, sortBy, page = 1, pageSize = 1 } = params;
+    const { questionId, sortBy, page = 1, pageSize = 5 } = params;
     const skipAmount = (page - 1) * pageSize;
 
     let sortOptions = {};

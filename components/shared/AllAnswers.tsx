@@ -23,9 +23,11 @@ async function AllAnswers({
   page,
   filter,
 }: Props) {
+  const pageAnswer = page ? +page : 1;
+
   const result = await getAnswers({
     questionId,
-    page: page ? +page : 1,
+    page: pageAnswer,
     sortBy: filter,
   });
 
@@ -80,9 +82,11 @@ async function AllAnswers({
         ))}
       </div>
 
-      <div className="mt-10 w-full">
+      {!result?.isNext && pageAnswer === 1 ? (
+        <></>
+      ) : (
         <Pagination pageNumber={page ? +page : 1} isNext={result?.isNext} />
-      </div>
+      )}
     </div>
   );
 }

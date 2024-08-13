@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useTheme } from '@/context/ThemeProvider';
 import { createQuestion, editQuestion } from '@/lib/actions/question.action';
 import { QuestionsSchema } from '@/lib/validations';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -35,6 +36,7 @@ const Question = ({ mongoUserId, type, questionDetails }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
+  const { mode } = useTheme();
 
   const parsedQuestionDetails =
     questionDetails && JSON.parse(questionDetails || '');
@@ -191,6 +193,8 @@ const Question = ({ mongoUserId, type, questionDetails }: Props) => {
                       'codesample | bold italic forecolor | alignleft aligncenter |' +
                       'alignright alignjustify | bullist numlist',
                     content_style: 'body { font-family:Inter; font-size:16px }',
+                    skin: mode === 'dark' ? 'oxide-dark' : 'oxide',
+                    content_css: mode === 'dark' ? 'dark' : 'light',
                   }}
                 />
               </FormControl>
