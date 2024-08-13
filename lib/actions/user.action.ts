@@ -311,7 +311,7 @@ export async function getUserQuestions(params: GetUserStatsParams) {
   try {
     connectToDatabase();
 
-    const { userId, page = 1, pageSize = 2 } = params;
+    const { userId, page = 1, pageSize = 5 } = params;
 
     const skipAmount = (page - 1) * pageSize;
 
@@ -337,7 +337,7 @@ export async function getUserAnswers(params: GetUserStatsParams) {
   try {
     await connectToDatabase();
 
-    const { userId, page = 1, pageSize = 3 } = params;
+    const { userId, page = 1, pageSize = 5 } = params;
 
     const skipAmount = (page - 1) * pageSize;
 
