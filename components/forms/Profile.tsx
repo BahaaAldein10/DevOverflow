@@ -49,6 +49,10 @@ function Profile({ mongoUser }: Props) {
       });
 
       router.back();
+
+      toast({
+        title: 'Profile Updated Successfully!',
+      });
     } catch (error) {
       console.log(error);
       throw error;
@@ -76,7 +80,7 @@ function Profile({ mongoUser }: Props) {
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-dark400_light800" />
             </FormItem>
           )}
         />
@@ -95,7 +99,7 @@ function Profile({ mongoUser }: Props) {
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-dark400_light800" />
             </FormItem>
           )}
         />
@@ -115,7 +119,7 @@ function Profile({ mongoUser }: Props) {
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-500" />
             </FormItem>
           )}
         />
@@ -135,7 +139,7 @@ function Profile({ mongoUser }: Props) {
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-500" />
             </FormItem>
           )}
         />
@@ -155,7 +159,7 @@ function Profile({ mongoUser }: Props) {
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-dark400_light800" />
             </FormItem>
           )}
         />
@@ -165,11 +169,6 @@ function Profile({ mongoUser }: Props) {
             type="submit"
             className="primary-gradient w-fit"
             disabled={form.formState.isSubmitting}
-            onClick={() => {
-              toast({
-                title: 'Profile Updated Successfully!',
-              });
-            }}
           >
             {form.formState.isSubmitting ? 'Saving...' : 'Save'}
           </Button>
