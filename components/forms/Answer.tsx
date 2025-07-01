@@ -72,7 +72,7 @@ function Answer({ question, questionId, authorId }: props) {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/chatgpt`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/gemini`,
         {
           method: 'POST',
           body: JSON.stringify({ question }),
