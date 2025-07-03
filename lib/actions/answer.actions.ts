@@ -25,7 +25,7 @@ export async function createAnswer(params: CreateAnswerParams) {
       $push: { answers: newAnswer._id },
     });
 
-    await Interaction.create(author, {
+    await Interaction.create({
       user: author,
       action: 'answer_question',
       question,

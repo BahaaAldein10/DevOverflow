@@ -47,7 +47,7 @@ const Filter = ({
 
   return (
     <div className={`relative ${containerClasses}`}>
-      <Select onValueChange={handleChange} defaultValue={param || undefined}>
+      <Select onValueChange={handleChange} value={param || undefined}>
         <SelectTrigger
           className={`${otherClasses} body-regular light-border background-light800_dark300 text-dark500_light700 border px-5 py-2.5`}
         >

@@ -4,8 +4,7 @@ import JobCard from '@/components/cards/JobCard';
 import Filter from '@/components/shared/Filter';
 import LocalSearchbar from '@/components/shared/LocalSearchbar';
 import Pagination from '@/components/shared/Pagination';
-import { formUrlQuery } from '@/lib/utils';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface Job {
@@ -27,135 +26,90 @@ interface Country {
   flagSvg: string;
 }
 
-function Jobs() {
+export default function Jobs() {
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [countryCode, setCountryCode] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState('');
   const [countries, setCountries] = useState<Country[]>([]);
-  const [totalPages, setTotalPages] = useState<number>(0);
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [totalPages, setTotalPages] = useState(0);
 
   const searchParams = useSearchParams();
-  const router = useRouter();
-
   const pageNumber = Number(searchParams.get('page')) || 1;
   const pageSize = 5;
 
+  // 1. Fetch jobs once pageNumber changes
   useEffect(() => {
-    const fetchJobs = async () => {
+    async function fetchJobs() {
       try {
-        const response = await fetch(
+        const res = await fetch(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/api/search`
         );
-
-        const responseData = await response.json();
-
-        const startIndex = (pageNumber - 1) * pageSize;
-        const lastIndex = startIndex + pageSize;
-
-        const result = responseData.result.slice(startIndex, lastIndex);
-
-        const totalItems = responseData.totalItems;
-
-        // Calculate the total number of pages
-        setTotalPages(Math.ceil(totalItems / pageSize));
-
-        setJobs(result);
-      } catch (error) {
-        console.log(error);
+        const data = await res.json();
+        const start = (pageNumber - 1) * pageSize;
+        const sliced = data.result.slice(start, start + pageSize);
+        setJobs(sliced);
+        setTotalPages(Math.ceil(data.totalItems / pageSize));
+      } catch (err) {
+        console.error(err);
       }
-    };
-
+    }
     fetchJobs();
   }, [pageNumber]);
 
+  // 2. Fetch country list once filterQuery changes
+  const filterQuery = searchParams.get('filter')?.toLowerCase() || '';
+
   useEffect(() => {
-    const fetchIP = async () => {
+    async function fetchCountries() {
       try {
-        const response = await fetch(
-          'http://ip-api.com/json/?fields=status,message,countryCode,country'
+        const res = await fetch(
+          'https://restcountries.com/v3.1/all?fields=name,cca2,flags'
         );
+        const list = await res.json();
 
-        const result = await response.json();
-        setCountryCode(result.countryCode);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchIP();
-  }, []);
-
-  useEffect(() => {
-    if (!searchParams.has('filter') || searchParams.get('filter') === '') {
-      const newUrl = formUrlQuery({
-        params: searchParams.toString(),
-        key: 'filter',
-        value: countryCode.toLowerCase(),
-      });
-
-      router.push(newUrl);
-    } else {
-      const countryValue = searchParams.get('filter')?.toLowerCase() || '';
-      const country = countries.find(
-        (country) => country.value === countryValue
-      );
-      setSelectedCountry(country ? country.name : '');
-    }
-  }, [router, searchParams, countryCode, countries]);
-
-  const searchQuery = searchParams.get('q')?.toLowerCase() || '';
-  const filterQuery = searchParams.get('filter')?.toLowerCase();
-
-  const filteredJobs: Job[] = jobs.filter((job) => {
-    const jobTitle = job.job_title.toLowerCase();
-    const jobEmploymentType = job.job_employment_type.toLowerCase();
-    const jobDescription = job.job_description.toLowerCase();
-    const jobCountry = job.job_country.toLowerCase();
-
-    // Match against search query
-    const matchesSearch =
-      jobTitle.includes(searchQuery) ||
-      jobEmploymentType.includes(searchQuery) ||
-      jobDescription.includes(searchQuery);
-
-    // Match against filter query
-    const matchesFilter = filterQuery ? jobCountry.includes(filterQuery) : true;
-
-    return matchesSearch && matchesFilter;
-  });
-
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await fetch('https://restcountries.com/v3.1/all');
-        const result = await response.json();
-
-        const countriesFilters = result
-          .map((country: any) => ({
-            name: country.name.common,
-            value: country.cca2.toLowerCase(),
-            flagSvg: country.flags.svg,
+        const mapped: Country[] = list
+          .map((c: any) => ({
+            name: c.name.common,
+            value: c.cca2.toLowerCase(),
+            flagSvg: c.flags.svg,
           }))
-          .sort((a: any, b: any) => {
-            // Compare the names in alphabetical order
-            if (a.name < b.name) return -1;
-            if (a.name > b.name) return 1;
-            return 0;
-          });
+          .sort((a: any, b: any) => a.name.localeCompare(b.name));
 
-        setCountries(countriesFilters);
-      } catch (error) {
-        console.log(error);
+        setCountries(mapped);
+
+        // Safely find the full country name for this code
+        const matched = mapped.find((c) => c.value === filterQuery);
+        setSelectedCountry(matched ? matched.name : '');
+      } catch (err) {
+        console.error(err);
       }
-    };
-
+    }
     fetchCountries();
-  }, []);
+  }, [filterQuery]);
+
+  // 3. Apply search + country-name filter
+  const searchQuery = searchParams.get('q')?.toLowerCase() || '';
+  const filteredJobs = jobs.filter((job) => {
+    const title = job.job_title.toLowerCase();
+    const desc = job.job_description.toLowerCase();
+    const type = job.job_employment_type.toLowerCase();
+    const countryName = job.job_country.toLowerCase();
+
+    const matchesSearch =
+      title.includes(searchQuery) ||
+      desc.includes(searchQuery) ||
+      type.includes(searchQuery);
+
+    const matchesCountry = filterQuery
+      ? countryName === selectedCountry.toLowerCase()
+      : true;
+
+    return matchesSearch && matchesCountry;
+  });
 
   return (
     <>
       <h1 className="h1-bold text-dark100_light900">
-        Jobs | {filterQuery?.toUpperCase()}
+        Jobs{filterQuery && ` | ${filterQuery.toUpperCase()}`}
       </h1>
 
       <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
@@ -166,7 +120,6 @@ function Jobs() {
           placeholder="Job Title or Keywords"
           otherClasses="flex-1"
         />
-
         <Filter
           filters={countries}
           otherClasses="min-h-[56px] sm:min-w-[170px]"
@@ -176,10 +129,11 @@ function Jobs() {
 
       <div className="mt-10 flex w-full flex-col gap-6">
         {filteredJobs.length > 0 ? (
-          filteredJobs.map((job, index) => <JobCard key={index} job={job} />)
+          filteredJobs.map((job, i) => <JobCard key={i} job={job} />)
         ) : (
           <p className="text-dark200_light900">
-            No job listings available for {selectedCountry}.
+            No job listings available
+            {selectedCountry && ` for ${selectedCountry}`}.
           </p>
         )}
       </div>
@@ -195,5 +149,3 @@ function Jobs() {
     </>
   );
 }
-
-export default Jobs;

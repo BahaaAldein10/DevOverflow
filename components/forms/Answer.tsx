@@ -1,9 +1,5 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -15,15 +11,19 @@ import {
 import { useTheme } from '@/context/ThemeProvider';
 import { createAnswer } from '@/lib/actions/answer.actions';
 import { AnswerSchema } from '@/lib/validations';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Editor } from '@tinymce/tinymce-react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { toast } from '../ui/use-toast';
 
 interface props {
   question: string;
   questionId: string;
-  authorId: string;
+  authorId: string | null;
 }
 
 function Answer({ question, questionId, authorId }: props) {
@@ -41,13 +41,15 @@ function Answer({ question, questionId, authorId }: props) {
   });
 
   async function handleCreateAnswer(values: z.infer<typeof AnswerSchema>) {
+    if (!authorId) return toast({ title: 'You are not logged in!' });
+
     setIsSubmitting(true);
 
     try {
       await createAnswer({
         content: values.answer,
-        author: JSON.parse(authorId),
-        question: JSON.parse(questionId),
+        author: authorId ? JSON.parse(authorId) : null,
+        question: questionId ? JSON.parse(questionId) : null,
         path: pathname,
       });
 
@@ -60,6 +62,7 @@ function Answer({ question, questionId, authorId }: props) {
       }
     } catch (error) {
       console.log(error);
+      toast({ title: 'Failed to submit answer. Please try again.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -83,13 +86,18 @@ function Answer({ question, questionId, authorId }: props) {
 
       const formattedAnswer = aiAnswer.reply.replace('/\n/g', '<br />');
 
-      alert(aiAnswer.reply);
+      toast({
+        title: 'AI Answer Generated Successfully!',
+      });
 
       if (editorRef.current) {
         const editor = editorRef.current as any;
         editor.setContent(formattedAnswer);
       }
     } catch (error) {
+      toast({
+        title: 'AI Answer Generation Failed!',
+      });
       console.log(error);
     } finally {
       setAiSubmitting(false);
